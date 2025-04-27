@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
-    : proc_id(id), cache(s, E, b), has_instruction(false), is_stalled(false), stall_cycles(0),
+    : proc_id(id), cache(s, E, b), has_instruction(false), is_next_to_miss(false), stall_cycles(0),
       total_cycles(0), idle_cycles(0), reads(0), writes(0) {
     // Open trace file
     string filename = trace_prefix + "_proc" + to_string(id) + ".trace";
@@ -22,17 +22,17 @@ Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
 
 bool Processor::execute_cycle(Bus* bus, int global_cycle) {
     // If stalled, decrement stall counter 
-    if (is_stalled) {
-        stall_cycles--;
-        idle_cycles++;
-        if (stall_cycles <= 0) {
-            is_stalled = false;
-            // Read next instruction after stall completes
-            read_next_instruction();
-        }
-        total_cycles++;
-        return true;
-    }
+    // if (is_stalled) {
+    //     stall_cycles--;
+    //     idle_cycles++;
+    //     if (stall_cycles <= 0) {
+    //         is_stalled = false;
+    //         // Read next instruction after stall completes
+    //         read_next_instruction();
+    //     }
+    //     total_cycles++;
+    //     return true;
+    // }
     
     // If we have an instruction, process it
     if (has_instruction) {
@@ -60,7 +60,7 @@ bool Processor::read_next_instruction() {
         iss >> current_op >> hex >> current_addr;
         has_instruction = true;
         if(current_op == 'R') reads++;
-        else if (current_op == 'W') writes++;
+        else if (current_op == 'W') writes++; 
         return true;
     }
     
@@ -71,15 +71,27 @@ bool Processor::read_next_instruction() {
 bool Processor::process_instruction(Bus* bus, int global_cycle) {
     bool is_write = (current_op == 'W');  
     int stalls = 0;
-    bool success = cache.access(current_addr, is_write, stalls, proc_id, bus, global_cycle);
+    pair<bool,bool> success = cache.access(current_addr, is_write, stalls, proc_id, bus, global_cycle);
 
-    if (stalls > 0) {
-        is_stalled = true;
-        stall_cycles = stalls;
-        idle_cycles++;
-    } 
-    
-    if (!success) return false;
-    else  read_next_instruction();
+    // if (stalls > 0) {
+    //     is_stalled = true;
+    //     stall_cycles = stalls;
+    //     idle_cycles++;
+    // }
+    if (!success.first) {
+        idle_cycles++; 
+        if(is_next_to_miss && success.second){ // got from other caches
+            is_next_to_miss=false;
+        }
+        if(is_next_to_miss && !success.second) {
+            cache.misses++;   // misses in cache
+            is_next_to_miss = false; // stall the processor
+        }
+        return false; 
+    }
+    else{
+        read_next_instruction();
+        is_next_to_miss = true;
+    }
     return true;
 }

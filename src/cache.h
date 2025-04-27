@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <climits>
+using namespace std;
 
 class Bus;
 struct CacheLine {
@@ -20,14 +21,14 @@ private:
     int block_bits;
     int block_size;
 
-    std::vector<std::vector<CacheLine>> cache_lines;
+    vector<vector<CacheLine>> cache_lines;
 
     int find_line(uint32_t set, uint32_t tag) const;
     int find_line_to_replace(uint32_t set) const;
     bool handle_write_back(uint32_t set, int way, int& stalls);
 
-    bool access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle);
-    bool access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle);
+    pair<bool,bool> access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle);
+    pair<bool,bool> access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle);
 
 public:
     int misses;
@@ -40,7 +41,7 @@ public:
 
     Cache(int s, int E, int b);
     
-    bool access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle);
+    pair<bool,bool> access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle);
     char snoop(uint32_t address, bool is_write, int requesting_core, int& stalls, Bus* bus);
     
     char get_line_state(uint32_t address);

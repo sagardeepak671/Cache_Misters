@@ -8,97 +8,96 @@ Cache::Cache(int s, int E, int b)
       misses(0),tot_cycles(0), hits(0), evictions(0), writebacks(0), invalidations(0), data_traffic(0),
       cache_lines(num_sets, std::vector<CacheLine>(associativity, {'I', 0, 0})) {}
 
-bool Cache::access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle) {
+pair<bool,bool> Cache::access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle) {
     return is_write ? access_write(address, stalls, core_id, bus, global_cycle): access_read(address, stalls, core_id, bus, global_cycle);
 }
 
-bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
+pair<bool,bool> Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address);
-    int way = find_line(set, tag);
+    int way = find_line(set, tag); 
 
     // read hit
     if (way != -1 && cache_lines[set][way].state != 'I') {
-        hits++;
+        // hits++;
         cache_lines[set][way].last_used_cycle = global_cycle;
-        return true;
+        return {true, true}; // hit, no stall
     }
     // read miss
-    misses++; 
+    // misses++; 
     if (bus->is_busy()) {
-        return false; // Bus is busy, retry in the next cycle
+        return {false,false}; // Bus is busy, retry in the next cycle
     }
     
     int replace_way = find_line_to_replace(set);
-    uint32_t last_address = get_address_from_set_and_tag(set,replace_way);
     if (replace_way != -1 && cache_lines[set][replace_way].state != 'I') {
         evictions++;
         if(cache_lines[set][replace_way].state == 'M') {
+            uint32_t last_address = get_address_from_set_and_tag(set,replace_way);
             handle_write_back(set, replace_way, stalls);
             bus->free_time = 100; 
             bus->message = {core_id, last_address, 'E'};
-            return false;
+            return {false,false};
         }
     }
     
     // Check other caches for the data (BusRd operation)
-    char state_in_other_caches = bus->read(address, core_id, stalls, global_cycle);
+    char state_in_other_caches = bus->read(address,false, core_id, stalls, global_cycle);
     
     // If bus returns 'X', it means bus is busy during operation
     if (state_in_other_caches == 'X') {
-        return false; // Retry operation later
+        return {false,false}; // Retry operation later
     }
     
     // Determine new state based on whether data was found in other caches
     char new_state;
     if (state_in_other_caches == 'I') {
         // Not in any other cache - get from memory in Exclusive state
-        stalls += 100; // Memory read takes 100 cycles
+        // stalls += 100; // Memory read takes 100 cycles
         data_traffic += block_size;
         bus->free_time = 100;
         bus->message = {core_id,address,'E'}; 
     } else{
         // Found in another cache - get in Shared state
         if(bus->is_busy()){
-            return false; // Bus is busy, retry in next cycle
+            return {false,false}; // Bus is busy, retry in next cycle
         }
         int words_in_block = block_size / 4;
-        stalls += 2 * words_in_block; // 2 cycles per word for cache-to-cache transfer
+        // stalls += 2 * words_in_block; // 2 cycles per word for cache-to-cache transfer
         data_traffic += block_size;
         bus->free_time = 2 * words_in_block;
+        cout<<"HAHA"<<endl;
         bus->message = {core_id,address,'S'};
+        return {false,true};
     }
-    return false;
+    return {false,false};
 }
 
-bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
+pair<bool,bool> Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
     uint32_t set = get_set_index(address);
-    uint32_t tag = get_tag(address);
+    uint32_t tag = get_tag(address); 
     int way = find_line(set, tag);
 
     // write hit
     if (way != -1 && cache_lines[set][way].state != 'I') {
-        hits++;
+        // hits++;
         cache_lines[set][way].last_used_cycle = global_cycle;
         
         if (cache_lines[set][way].state == 'M') {
-            return true; // direct write already this address
+            return {true,true}; // direct write already this address
         } else if (cache_lines[set][way].state == 'E') { 
             cache_lines[set][way].state = 'M';
-            return true;
+            return {true,true}; // direct write already this address
         } else if (cache_lines[set][way].state == 'S') { 
-            if (bus->is_busy()) {
-                return false; 
-            }
             bus->invalidate(address, core_id, stalls, global_cycle);
             cache_lines[set][way].state = 'M';
-            return true;
+            return {true,true}; // direct write already this address
         }
     }
     // write miss
-    misses++;
+    // misses++;
     if (bus->is_busy()) {
-        return false; // Bus is busy, retry in next cycle
+        return {false,false}; // Bus is busy, retry in next cycle
     }
     
     // Find line to replace if needed
@@ -110,19 +109,24 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
             handle_write_back(set, replace_way, stalls);
             bus->free_time = 100; 
             bus->message = {core_id, last_address, 'I'};
-            return false;
+            return {false,false}; // retry in next cycle
         }
     }
-    
+
+    // Check other caches for the data (BusRd operation)
+    char state_in_other_caches = bus->read(address,true, core_id, stalls, global_cycle);
+    if(state_in_other_caches == 'X') {
+        return {false,false}; // Bus is busy, retry in next cycle
+    }
     // no other copies read from memory
-    stalls = 100; // Memory read takes 100 cycles
+    // stalls = 100; // Memory read takes 100 cycles
     data_traffic += block_size;
     bus->free_time = 100;
     bus->message = {core_id,address,'E'};
 
     //Read with intent to modify ... if other processors contain this address invalidate them
     bus->invalidate(address,core_id,stalls,global_cycle);
-    return false;
+    return {false,false};
 }
 
 char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& stalls, Bus* bus) {
@@ -134,6 +138,14 @@ char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& sta
     char current_state = cache_lines[set][way].state;
      
     if (is_write) {  
+        if (current_state == 'M') {
+            // Provide data and transition to Shared
+            handle_write_back(set, way, stalls);
+            uint32_t last_address = get_address_from_set_and_tag(set,way);
+            bus->free_time = 100;
+            bus->message = {requesting_core, last_address, 'E'};
+            return 'M';
+        }
     } else { // BusRd
         if (current_state == 'M') {
             // Provide data and transition to Shared
@@ -179,7 +191,7 @@ uint32_t Cache::get_address_from_set_and_tag(uint32_t set, uint32_t tag) const {
 bool Cache::handle_write_back(uint32_t set, int way, int& stalls) {
     if (cache_lines[set][way].state == 'M') {
         writebacks++;
-        stalls += 100; // Memory write takes 100 cycles as per specification
+        // stalls += 100; // Memory write takes 100 cycles as per specification
         data_traffic += block_size;
         return true;
     }

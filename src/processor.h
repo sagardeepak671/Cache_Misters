@@ -18,7 +18,7 @@ private:
     uint32_t current_addr;
     bool has_instruction;
     
-    bool is_stalled;
+    bool is_next_to_miss;
     int stall_cycles;
     
     bool read_next_instruction();

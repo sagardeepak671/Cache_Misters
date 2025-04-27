@@ -28,8 +28,6 @@ void Simulator::run() {
         cout<<"Cycle: "<<global_cycle<<endl;
         for (Processor* proc : processors) {
             if (proc->execute_cycle(&bus, global_cycle)) {
-                // cout<<"Core "<<proc->get_id()<<" executed an instruction."<<endl;
-                // proc->total_cycles++;
                 running = true;
             }
         }

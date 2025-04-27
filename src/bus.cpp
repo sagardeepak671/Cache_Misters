@@ -9,7 +9,7 @@ void Bus::add_processor(Processor* proc) {
     processors.push_back(proc);
 }
 
-char Bus::read(uint32_t address, int requesting_core, int& cycles, int current_cycle) {
+char Bus::read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle) {
     if (is_busy()) {
         return 'X'; // Bus is busy
     } 
@@ -21,7 +21,7 @@ char Bus::read(uint32_t address, int requesting_core, int& cycles, int current_c
     for (Processor* proc : processors) {
         if (proc->get_id() != requesting_core) {
             int snoop_cycles = 0;
-            char state = proc->snoop_request(address, false, requesting_core, snoop_cycles);
+            char state = proc->snoop_request(address, is_write, requesting_core, snoop_cycles);
             cycles += snoop_cycles;
             
             if (state != 'I') {

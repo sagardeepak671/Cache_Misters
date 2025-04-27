@@ -1,25 +1,24 @@
-#include <iostream>
-#include <fstream>
+#include <bits/stdc++.h>
 #include <getopt.h>
 #include "simulate.h"
 #include "utils.h"
+using namespace std;
 
 int main(int argc, char* argv[]) {
-    std::string trace_prefix, outfile;
+    string trace_prefix, outfile;
     int s = -1, E = -1, b = -1, opt;
     
     while ((opt = getopt(argc, argv, "t:s:E:b:o:h")) != -1) {
         if (opt == 't') trace_prefix = optarg;
-        else if (opt == 's') s = std::stoi(optarg);
-        else if (opt == 'E') E = std::stoi(optarg);
-        else if (opt == 'b') b = std::stoi(optarg);
+        else if (opt == 's') s = stoi(optarg);
+        else if (opt == 'E') E = stoi(optarg);
+        else if (opt == 'b') b = stoi(optarg);
         else if (opt == 'o') outfile = optarg;
         else { Wrong_Parameters(argv[0]); return opt == 'h' ? 0 : 1; }
     }
     
     if (trace_prefix.empty() || s < 0 || E <= 0 || b < 0) {
-        Wrong_Parameters(argv[0]);
-        return 1;
+        Wrong_Parameters(argv[0]);return 0;
     }
     
     try {
@@ -27,12 +26,12 @@ int main(int argc, char* argv[]) {
         simulator.run();
         
         if (!outfile.empty()) {
-            std::ofstream out(outfile);
+            ofstream out(outfile);
             if (out) simulator.print_results(out);
-            else { std::cerr << "Error: Could not open output file " << outfile << std::endl; return 1; }
-        } else simulator.print_results(std::cout);
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+            else { cerr << "Error: Could not open output file " << outfile << endl; return 1; }
+        } else simulator.print_results(cout);
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
         return 1;
     }
     
