@@ -34,6 +34,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
             uint32_t last_address = get_address_from_set_and_tag(set,replace_way);
             handle_write_back(set, replace_way, stalls);
             bus->free_time = 100; 
+            stalls += 100;
             bus->message = {core_id, last_address, 'E'};
             // idle cycles--;
             return false;
