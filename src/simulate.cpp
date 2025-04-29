@@ -28,6 +28,7 @@ void Simulator::run() {
         worked = false;
         // Execute one cycle for each processor
         cout<<"Cycle: "<<global_cycle<<endl;
+        if (global_cycle>300) break;
         for (Processor* proc : processors) {
             char res = proc->execute_cycle(&bus,global_cycle);
             if(res =='@' || res=='$'){
@@ -43,11 +44,15 @@ void Simulator::run() {
         if(worked==false){
             // do free the bus instantly adding up it to global cycles
             global_cycle+=bus.free_time;
-            bus.free_time=0;
             for(Processor* proc:processors){
-                proc->stall_cycles=0;
-                proc->is_stalled=false;
+                if(proc->get_has_instruction()){
+                    proc->idle_cycles += bus.free_time;
+                    proc->total_cycles += bus.free_time;
+                    proc->stall_cycles=0;
+                    proc->is_stalled=false;
+                }
             }
+            bus.free_time=0;
         }
         bus.free_time = max(0, bus.free_time - 1);
         if(bus.free_time ==0){
@@ -74,7 +79,7 @@ void Simulator::print_results(ostream& out) {
             << "Total Instructions: " << proc->total_instructions() << "\n"
             << "Total Reads: " << proc->reads << "\n"
             << "Total Writes: " << proc->writes << "\n"
-            << "Total Execution Cycles: " << proc->total_cycles << "\n"
+            << "Total Execution Cycles: " << proc->total_cycles - proc->idle_cycles << "\n"
             << "Idle Cycles: " << proc->idle_cycles << "\n"
             << "Cache Misses: " << cache->misses << "\n"
             << "Cache Miss Rate: " << fixed << setprecision(2) << miss_rate << "%\n"

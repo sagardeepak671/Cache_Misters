@@ -8,11 +8,11 @@ Cache::Cache(int s, int E, int b)
       misses(0),tot_cycles(0), hits(0), evictions(0), writebacks(0), invalidations(0), data_traffic(0),
       cache_lines(num_sets, std::vector<CacheLine>(associativity, {'I', 0, 0})) {}
 
-bool Cache::access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle) {
-    return is_write ? access_write(address, stalls, core_id, bus, global_cycle): access_read(address, stalls, core_id, bus, global_cycle);
+bool Cache::access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle,bool new_instruction) {
+    return is_write ? access_write(address, stalls, core_id, bus, global_cycle,new_instruction): access_read(address, stalls, core_id, bus, global_cycle,new_instruction);
 }
 
-bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
+bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle,bool new_instruction) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address);
     int way = find_line(set, tag);
@@ -23,7 +23,10 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     }
 
     // read miss 
-    misses++;
+    if (new_instruction) {
+        cout<<"miss in core "<<core_id<<endl;
+        misses++;
+    }
     if (bus->is_busy()) return false;
     int replace_way = find_line_to_replace(set);
     if (replace_way != -1 && cache_lines[set][replace_way].state != 'I') {
@@ -31,9 +34,9 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
         if(cache_lines[set][replace_way].state == 'M') {
             uint32_t last_address = get_address_from_set_and_tag(set,cache_lines[set][replace_way].tag);
             handle_write_back(set, replace_way, stalls);
-            bus->free_time = 100; 
+            bus->free_time = 100;
             stalls += 100;
-            bus->message = {core_id, last_address, 'E'};
+            cache_lines[set][replace_way] = {'E', tag , global_cycle + stalls};
             // idle cycles--;
             return false;
         }
@@ -41,7 +44,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     
     // Check other caches for the data (BusRd operation)
     char state_in_other_caches = bus->read(address,false, core_id, stalls, global_cycle);
-    
+    cout<<"checked for core"<<core_id<<" found "<<state_in_other_caches<<endl;
     // Determine new state based on whether data was found in other caches
     if (state_in_other_caches == 'I'){
         // Not in any other cache - get from memory in Exclusive state
@@ -49,13 +52,13 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
         data_traffic += block_size;
         bus->free_time = 100;
         stalls += 100;
-        bus->message = {core_id,address,'E'}; 
+        cache_lines[set][replace_way] ={'E',get_tag(address),global_cycle + stalls};
     }else{
         // Found in another cache - get in Shared state
         //first cache to chache copy
         int words_in_block = block_size / 4;
         bus->free_time = 2 * words_in_block;
-        bus->message = {core_id,address,'S'};
+        cache_lines[set][replace_way] = {'S', get_tag(address), global_cycle + stalls};
         data_traffic += block_size;
         // write back in case for M
         if(state_in_other_caches == 'M'){
@@ -69,7 +72,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     return false;
 }
 
-bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle) {
+bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, int global_cycle,bool new_instruction) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address); 
     int way = find_line(set, tag);
@@ -93,7 +96,7 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
         }
     }
     // write miss
-    misses++;
+    if (new_instruction) misses++;
     if (bus->is_busy()) return false;
     
     // Find line to replace if needed

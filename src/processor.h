@@ -18,7 +18,7 @@ private:
     uint32_t current_addr;
     bool has_instruction;
     
-    bool is_next_to_miss;
+    bool has_new_instruction;
     
     void read_next_instruction();
     bool process_instruction(Bus* bus, int global_cycle);
@@ -43,6 +43,8 @@ public:
     Cache* get_cache() { return &cache; }
     
     int total_instructions() const { return reads + writes; }
+
+    bool get_has_instruction() const { return has_instruction; }
 };
 
 #endif // PROCESSOR_H
