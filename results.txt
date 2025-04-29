@@ -1,63 +1,63 @@
 Simulation Parameters:
 Trace Prefix: app1
-Set Index Bits: 7, Associativity: 2, Block Bits: 5
-Block Size (Bytes): 32, Number of Sets: 128, Cache Size (KB per core): 8
+Set Index Bits: 1, Associativity: 2, Block Bits: 5
+Block Size (Bytes): 32, Number of Sets: 2, Cache Size (KB per core): 0.125
 MESI Protocol: Enabled, Write Policy: Write-back, Write-allocate
 Replacement Policy: LRU, Bus: Central snooping bus
 
 Core 0 Statistics:
-Total Instructions: 1
-Total Reads: 1
+Total Instructions: 5
+Total Reads: 5
 Total Writes: 0
-Total Execution Cycles: 101
-Idle Cycles: 100
-Cache Misses: 1
-Cache Miss Rate: 100.00%
-Cache Evictions: 0
+Total Execution Cycles: 565
+Idle Cycles: 560
+Cache Misses: 4
+Cache Miss Rate: 80.00%
+Cache Evictions: 3
 Writebacks: 0
 Bus Invalidations: 0
-Data Traffic (Bytes): 32
+Data Traffic (Bytes): 160
 
 Core 1 Statistics:
-Total Instructions: 129
-Total Reads: 129
+Total Instructions: 5
+Total Reads: 5
 Total Writes: 0
-Total Execution Cycles: 345
-Idle Cycles: 216
-Cache Misses: 1
-Cache Miss Rate: 0.78%
-Cache Evictions: 0
+Total Execution Cycles: 581
+Idle Cycles: 576
+Cache Misses: 4
+Cache Miss Rate: 80.00%
+Cache Evictions: 3
 Writebacks: 0
 Bus Invalidations: 0
-Data Traffic (Bytes): 64
+Data Traffic (Bytes): 160
 
 Core 2 Statistics:
-Total Instructions: 0
-Total Reads: 0
+Total Instructions: 5
+Total Reads: 5
 Total Writes: 0
-Total Execution Cycles: 0
-Idle Cycles: 0
-Cache Misses: 0
-Cache Miss Rate: 0.00%
-Cache Evictions: 0
+Total Execution Cycles: 977
+Idle Cycles: 972
+Cache Misses: 4
+Cache Miss Rate: 80.00%
+Cache Evictions: 3
 Writebacks: 0
 Bus Invalidations: 0
-Data Traffic (Bytes): 0
+Data Traffic (Bytes): 160
 
 Core 3 Statistics:
-Total Instructions: 0
-Total Reads: 0
+Total Instructions: 5
+Total Reads: 5
 Total Writes: 0
-Total Execution Cycles: 0
-Idle Cycles: 0
-Cache Misses: 0
-Cache Miss Rate: 0.00%
-Cache Evictions: 0
+Total Execution Cycles: 993
+Idle Cycles: 988
+Cache Misses: 4
+Cache Miss Rate: 80.00%
+Cache Evictions: 3
 Writebacks: 0
 Bus Invalidations: 0
-Data Traffic (Bytes): 0
+Data Traffic (Bytes): 160
 
 Overall Bus Summary:
-Total Bus Transactions: 3
+Total Bus Transactions: 20
 Total Bus Traffic (Bytes): 0
-Maximum Execution Time: 345 cycles
+Maximum Execution Time: 993 cycles

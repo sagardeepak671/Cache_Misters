@@ -21,8 +21,8 @@ private:
     bool is_next_to_miss;
     int stall_cycles;
     
-    bool read_next_instruction();
-    bool process_instruction(Bus* bus, int global_cycle);
+    void read_next_instruction();
+    void process_instruction(Bus* bus, int global_cycle);
 
 public:
     int total_cycles;
