@@ -29,7 +29,9 @@ $(OBJ_DIR):
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
+app ?= app1
+
 run: $(TARGET)
-	./L1simulate -t app1 -s 5 -E 2 -b 5 -o results.txt
+	./L1simulate -t $(app) -s 5 -E 2 -b 5 -o results.txt
 
 .PHONY: all clean run
