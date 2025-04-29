@@ -30,6 +30,6 @@ clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
 run: $(TARGET)
-	./L1simulate -t app1 -s 7 -E 2 -b 5 -o results.txt
+	./L1simulate -t app1 -s 5 -E 2 -b 5 -o results.txt
 
 .PHONY: all clean run

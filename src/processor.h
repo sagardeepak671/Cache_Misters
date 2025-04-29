@@ -19,21 +19,23 @@ private:
     bool has_instruction;
     
     bool is_next_to_miss;
-    int stall_cycles;
     
     void read_next_instruction();
-    void process_instruction(Bus* bus, int global_cycle);
-
+    bool process_instruction(Bus* bus, int global_cycle);
+    
 public:
+    bool is_stalled;
+    int stall_cycles;
     int total_cycles;
     int idle_cycles;
+
     int reads;
     int writes;
     
     Processor(int id, const string& trace_prefix, int s, int E, int b);
  
     
-    bool execute_cycle(Bus* bus, int global_cycle);
+    char execute_cycle(Bus* bus, int global_cycle);
     char snoop_request(uint32_t address, bool is_write, int requesting_core, int& cycles);
     void invalidate_line(uint32_t address);
     

@@ -21,14 +21,32 @@ Simulator::~Simulator() {
 void Simulator::run() {
     bool running = true;
     int global_cycle = 1;
+    bool worked = false;
     
     while (running) {
         running = false;
+        worked = false;
         // Execute one cycle for each processor
         cout<<"Cycle: "<<global_cycle<<endl;
         for (Processor* proc : processors) {
-            if (proc->execute_cycle(&bus, global_cycle)) {
+            char res = proc->execute_cycle(&bus,global_cycle);
+            if(res =='@' || res=='$'){
                 running = true;
+            }
+            if(res=='@'){
+                worked=true;
+            }
+            // if (proc->execute_cycle(&bus, global_cycle) == '@' ) {
+            //     running = true;
+            // }
+        }
+        if(worked==false){
+            // do free the bus instantly adding up it to global cycles
+            global_cycle+=bus.free_time;
+            bus.free_time=0;
+            for(Processor* proc:processors){
+                proc->stall_cycles=0;
+                proc->is_stalled=false;
             }
         }
         bus.free_time = max(0, bus.free_time - 1);
@@ -40,9 +58,7 @@ void Simulator::run() {
                     bus.message = {-1, 0, 'I'};
                 }
             }
-            
         }
-        // cout<<"Bus free time: "<<bus.free_time<<endl;
         global_cycle++;
     }
 }
