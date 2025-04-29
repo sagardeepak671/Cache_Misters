@@ -11,7 +11,6 @@ struct Message {  // message for read from ram and write back to ram or message 
     uint32_t address ;
     char new_state;
 };
-
  
 
 class Bus {
@@ -23,12 +22,12 @@ public:
     int total_traffic;
     int free_time;
 
-    Message message; 
+    Message message;
 
     Bus();
 
     void add_processor(Processor* proc);
-    char read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle);
+    pair<char,int> read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle);
     bool read_exclusive(uint32_t address, int requesting_core, int& cycles, int current_cycle);
     void invalidate(uint32_t address, int requesting_core, int& cycles, int current_cycle);
 

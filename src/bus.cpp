@@ -3,34 +3,35 @@
 
 Bus::Bus() : total_transactions(0), total_traffic(0), free_time(0), 
 message{-1, 0, 'I'} {
+    
 }
 
 void Bus::add_processor(Processor* proc) {
     processors.push_back(proc);
 }
 
-char Bus::read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle) {
+pair<char,int> Bus::read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle) {
     if (is_busy()) {
-        return 'X'; // Bus is busy
-    } 
+        return {'X',-1}; // Bus is busy
+    }
     
     total_transactions++;
     char found_state = 'I';
+    int found_proccessor_id = -1;
     
     // Try to find the data in other caches
     for (Processor* proc : processors) {
         if (proc->get_id() != requesting_core) {
             int snoop_cycles = 0;
             char state = proc->snoop_request(address, is_write, requesting_core, snoop_cycles);
-            cycles += snoop_cycles;
-            
             if (state != 'I') {
                 found_state = state;
+                found_proccessor_id = proc->get_id();
                 break; // Found in another cache
             }
         }
     } 
-    return found_state;
+    return {found_state,found_proccessor_id};
 }
 
 // bool Bus::read_exclusive(uint32_t address, int requesting_core, int& cycles, int current_cycle) {

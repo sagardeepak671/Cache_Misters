@@ -40,6 +40,7 @@ void Simulator::run() {
                     bus.message = {-1, 0, 'I'};
                 }
             }
+            
         }
         // cout<<"Bus free time: "<<bus.free_time<<endl;
         global_cycle++;
