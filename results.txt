@@ -1,63 +1,63 @@
 Simulation Parameters:
-Trace Prefix: app1
+Trace Prefix: assignment3_traces/app1
 Set Index Bits: 5, Associativity: 2, Block Bits: 5
 Block Size (Bytes): 32, Number of Sets: 32, Cache Size (KB per core): 2
 MESI Protocol: Enabled, Write Policy: Write-back, Write-allocate
 Replacement Policy: LRU, Bus: Central snooping bus
 
 Core 0 Statistics:
-Total Instructions: 2
-Total Reads: 2
+Total Instructions: 3
+Total Reads: 3
 Total Writes: 0
-Total Execution Cycles: 4
-Idle Cycles: 200
+Total Execution Cycles: 3
+Idle Cycles: 300
 Cache Misses: 2
-Cache Miss Rate: 100.00%
+Cache Miss Rate: 66.67%
 Cache Evictions: 0
 Writebacks: 0
-Bus Invalidations: 0
+Bus Invalidations: 1
 Data Traffic (Bytes): 64
 
 Core 1 Statistics:
-Total Instructions: 1
-Total Reads: 1
-Total Writes: 0
-Total Execution Cycles: 2
-Idle Cycles: 201
-Cache Misses: 1
-Cache Miss Rate: 100.00%
+Total Instructions: 4
+Total Reads: 0
+Total Writes: 4
+Total Execution Cycles: 5
+Idle Cycles: 298
+Cache Misses: 2
+Cache Miss Rate: 50.00%
 Cache Evictions: 0
 Writebacks: 0
 Bus Invalidations: 0
 Data Traffic (Bytes): 32
 
 Core 2 Statistics:
-Total Instructions: 0
-Total Reads: 0
+Total Instructions: 1
+Total Reads: 1
 Total Writes: 0
-Total Execution Cycles: 0
-Idle Cycles: 0
-Cache Misses: 0
-Cache Miss Rate: 0.00%
+Total Execution Cycles: 8
+Idle Cycles: 295
+Cache Misses: 1
+Cache Miss Rate: 100.00%
 Cache Evictions: 0
 Writebacks: 0
-Bus Invalidations: 0
+Bus Invalidations: 1
 Data Traffic (Bytes): 0
 
 Core 3 Statistics:
-Total Instructions: 0
+Total Instructions: 1
 Total Reads: 0
-Total Writes: 0
-Total Execution Cycles: 0
-Idle Cycles: 0
-Cache Misses: 0
-Cache Miss Rate: 0.00%
+Total Writes: 1
+Total Execution Cycles: 8
+Idle Cycles: 295
+Cache Misses: 1
+Cache Miss Rate: 100.00%
 Cache Evictions: 0
 Writebacks: 0
-Bus Invalidations: 0
+Bus Invalidations: 1
 Data Traffic (Bytes): 0
 
 Overall Bus Summary:
-Total Bus Transactions: 3
+Total Bus Transactions: 4
 Total Bus Traffic (Bytes): 0
-Maximum Execution Time: 204 cycles
+Maximum Execution Time: 303 cycles

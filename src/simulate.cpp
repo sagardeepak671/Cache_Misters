@@ -28,7 +28,6 @@ void Simulator::run() {
         worked = false;
         // Execute one cycle for each processor
         cout<<"Cycle: "<<global_cycle<<endl;
-        if (global_cycle>300) break;
         for (Processor* proc : processors) {
             char res = proc->execute_cycle(&bus,global_cycle);
             if(res =='@' || res=='$'){
