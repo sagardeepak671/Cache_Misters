@@ -27,7 +27,7 @@ public:
     Bus();
 
     void add_processor(Processor* proc);
-    pair<char,int> read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle);
+    char read(uint32_t address,bool is_write, int requesting_core, int& cycles, int current_cycle);
     bool read_exclusive(uint32_t address, int requesting_core, int& cycles, int current_cycle);
     void invalidate(uint32_t address, int requesting_core, int& cycles, int current_cycle);
 

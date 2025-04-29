@@ -21,6 +21,9 @@ Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
  
 
 bool Processor::execute_cycle(Bus* bus, int global_cycle) { 
+
+        
+
     if (has_instruction) {
         process_instruction(bus, global_cycle);
         total_cycles++; 
@@ -65,5 +68,6 @@ void Processor::process_instruction(Bus* bus, int global_cycle) {
     else{
         read_next_instruction();
         is_next_to_miss = true;
-    } 
+    }
+    stall_cycles = stalls; 
 } 
