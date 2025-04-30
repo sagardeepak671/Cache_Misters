@@ -42,7 +42,7 @@ public:
     Cache(int s, int E, int b);
     
     bool access(uint32_t address, bool is_write, int& stalls, int core_id, Bus* bus, int global_cycle,bool new_instruction);
-    char snoop(uint32_t address, bool is_write, int requesting_core, int& stalls, Bus* bus);
+    char snoop(uint32_t address, bool is_write, int requesting_core, int& stalls);
     
     char get_line_state(uint32_t address);
     void update_line_state(uint32_t address, char new_state);

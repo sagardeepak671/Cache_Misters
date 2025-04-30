@@ -36,7 +36,7 @@ public:
  
     
     char execute_cycle(Bus* bus, int global_cycle);
-    char snoop_request(uint32_t address, bool is_write, int requesting_core, int& cycles);
+    char snoop_request(uint32_t address, bool is_write, int requesting_core);
     void invalidate_line(uint32_t address);
     
     int get_id() const { return proc_id; }

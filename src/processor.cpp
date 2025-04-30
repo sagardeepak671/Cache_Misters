@@ -23,12 +23,11 @@ Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
 char Processor::execute_cycle(Bus* bus, int global_cycle) { 
 
     if (is_stalled) {
+        cout<<"stall cycle "<<stall_cycles<<endl;
         stall_cycles--;
-        idle_cycles++;
-        if (stall_cycles <= 0) {
+        if(stall_cycles>0)idle_cycles++;
+        else {
             is_stalled = false;
-            // Read next instruction after stall completes
-            read_next_instruction();
         }
         total_cycles++;
         return '$';
@@ -44,8 +43,12 @@ char Processor::execute_cycle(Bus* bus, int global_cycle) {
     return '!'; // No more instructions
 }
 
-char Processor::snoop_request(uint32_t address, bool is_write, int requesting_core, int& cycles) {
-    return cache.snoop(address, is_write, requesting_core, cycles, nullptr);
+char Processor::snoop_request(uint32_t address, bool is_write, int requesting_core) {
+    int stalls=0;
+    char res = cache.snoop(address, is_write, requesting_core, stalls);
+    stall_cycles+=stalls;
+    if(stalls>0) is_stalled=true;
+    return res;
 }
 
 void Processor::invalidate_line(uint32_t address) {
@@ -76,7 +79,6 @@ bool Processor::process_instruction(Bus* bus, int global_cycle) {
     if (stalls > 0) {
         is_stalled = true;
         stall_cycles = stalls;
-        idle_cycles++;
         cout<< "for core " << proc_id << " need " << stalls << " cycles" << endl;
     }
     if(success) {read_next_instruction();return true;}

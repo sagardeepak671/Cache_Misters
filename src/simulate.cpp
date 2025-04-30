@@ -78,7 +78,7 @@ void Simulator::print_results(ostream& out) {
             << "Total Instructions: " << proc->total_instructions() << "\n"
             << "Total Reads: " << proc->reads << "\n"
             << "Total Writes: " << proc->writes << "\n"
-            << "Total Execution Cycles: " << proc->total_cycles - proc->idle_cycles << "\n"
+            << "Total Execution Cycles: " << proc->total_instructions() << "\n"
             << "Idle Cycles: " << proc->idle_cycles << "\n"
             << "Cache Misses: " << cache->misses << "\n"
             << "Cache Miss Rate: " << fixed << setprecision(2) << miss_rate << "%\n"

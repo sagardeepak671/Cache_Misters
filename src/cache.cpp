@@ -58,7 +58,8 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
         //first cache to chache copy
         int words_in_block = block_size / 4;
         bus->free_time = 2 * words_in_block;
-        cache_lines[set][replace_way] = {'S', get_tag(address), global_cycle + stalls};
+        stalls += (2 * words_in_block);
+            cache_lines[set][replace_way] = {'S', get_tag(address), global_cycle + stalls};
         data_traffic += block_size;
         // write back in case for M
         if(state_in_other_caches == 'M'){
@@ -134,7 +135,7 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
     return false;
 }
 
-char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& stalls, Bus* bus) {
+char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& stalls) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address);
     int way = find_line(set, tag);
@@ -168,6 +169,7 @@ char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& sta
         } else if (current_state == 'S') {
             return 'S';
         }
+        stalls +=( 2 * block_size / 4 );
     } 
     return current_state;
 }

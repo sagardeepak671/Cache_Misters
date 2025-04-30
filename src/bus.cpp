@@ -21,8 +21,7 @@ char Bus::read(uint32_t address,bool is_write, int requesting_core, int& cycles,
     // Try to find the data in other caches
     for (Processor* proc : processors) {
         if (proc->get_id() != requesting_core) {
-            int snoop_cycles = 0;
-            char state = proc->snoop_request(address, is_write, requesting_core, snoop_cycles);
+            char state = proc->snoop_request(address, is_write, requesting_core);
             if (state != 'I') {
                 found_state = state; 
                 break; // Found in another cache
