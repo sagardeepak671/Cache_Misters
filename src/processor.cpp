@@ -24,7 +24,7 @@ Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
 ProcessorStatus Processor::execute_cycle(Bus* bus, int global_cycle) { 
 
     if (is_stalled) {
-        cout<<"stall cycle "<<stall_cycles<<endl;
+        // cout<<"stall cycle "<<stall_cycles<<endl;
         stall_cycles--;
         if(stall_cycles>=0)idle_cycles++;
         else {
@@ -34,10 +34,16 @@ ProcessorStatus Processor::execute_cycle(Bus* bus, int global_cycle) {
         return WaitingForBus;
     }
     if (has_instruction) {
-        total_cycles++; 
         if(process_instruction(bus, global_cycle)){
+            total_cycles++;
+            read_next_instruction(); 
             return InstructionProcessed;  
         }else{
+            if(has_new_instruction)total_cycles++;
+            else {
+                idle_cycles++;
+            }
+            has_new_instruction=false;
             return WaitingForBus;  
         }
     }
@@ -76,12 +82,10 @@ bool Processor::process_instruction(Bus* bus, int global_cycle) {
     bool is_write = (current_op == 'W');  
     int stalls = 0;
     bool success = cache.access(current_addr, is_write, stalls, proc_id, bus, global_cycle,has_new_instruction);
-    has_new_instruction=false;
     if (stalls > 0) {
         is_stalled = true;
         stall_cycles = stalls;
-        cout<< "for core " << proc_id << " need " << stalls << " cycles" << endl;
+        // cout<< "for core " << proc_id << " need " << stalls << " cycles" << endl;
     }
-    if(success) {read_next_instruction();return true;}
-    return false;
+    return success;
 } 

@@ -32,6 +32,6 @@ clean:
 app ?= test
 
 run: $(TARGET)
-	./L1simulate -t $(app) -s 5 -E 2 -b 5 -o results.txt
+	./L1simulate -t $(app) -s 6 -E 2 -b 5 -o results.txt
 
 .PHONY: all clean run

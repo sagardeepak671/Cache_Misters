@@ -24,7 +24,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
 
     // read miss 
     if (new_instruction) {
-        cout<<"miss in core "<<core_id<<endl;
+        // cout<<"miss in core "<<core_id<<endl;
         misses++;
     }
     if (bus->is_busy()) return false;
@@ -44,7 +44,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     
     // Check other caches for the data (BusRd operation)
     char state_in_other_caches = bus->read(address,false, core_id, stalls, global_cycle);
-    cout<<"checked for core"<<core_id<<" found "<<state_in_other_caches<<endl;
+    // cout<<"checked for core"<<core_id<<" found "<<state_in_other_caches<<endl;
     // Determine new state based on whether data was found in other caches
     if (state_in_other_caches == 'I'){
         // Not in any other cache - get from memory in Exclusive state
