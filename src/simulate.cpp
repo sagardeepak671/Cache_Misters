@@ -22,25 +22,36 @@ void Simulator::run() {
     bool running = true;
     int global_cycle = 1;
     bool worked = false;
-    
+    int start_processor = 0;
     while (running) {
         running = false;
         worked = false;
         // Execute one cycle for each processor
         cout<<"Cycle: "<<global_cycle<<endl;
-        for (Processor* proc : processors) {
-            ProcessorStatus res = proc->execute_cycle(&bus,global_cycle);
+        start_processor = global_cycle % 4;
+        for(int i=0;i<4;i++){
+            ProcessorStatus res = processors[start_processor]->execute_cycle(&bus,global_cycle);
             if(res == WaitingForBus || res == InstructionProcessed){
                 running = true;
             }
             if(res==InstructionProcessed){
                 worked=true;
             }
-            cout<<"*********"<<endl;
-            cout<< "Core " << proc->get_id() << " status: " << res << endl;
-            cout<<"idle cycles: "<<proc->idle_cycles<<endl;
-            cout<<"total cycles: "<<proc->total_cycles<<endl;
+            start_processor = (start_processor + 1) % 4;
         }
+        // for (Processor* proc : processors) {
+        //     ProcessorStatus res = proc->execute_cycle(&bus,global_cycle);
+        //     if(res == WaitingForBus || res == InstructionProcessed){
+        //         running = true;
+        //     }
+        //     if(res==InstructionProcessed){
+        //         worked=true;
+        //     }
+        //     cout<<"*********"<<endl;
+        //     cout<< "Core " << proc->get_id() << " status: " << res << endl;
+        //     cout<<"idle cycles: "<<proc->idle_cycles<<endl;
+        //     cout<<"total cycles: "<<proc->total_cycles<<endl;
+        // }
         cout<<"-------------------"<<endl;
         if(worked==false){
             // do free the bus instantly adding up it to global cycles
