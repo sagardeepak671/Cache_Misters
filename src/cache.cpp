@@ -1,5 +1,6 @@
 #include "cache.h"
 #include "bus.h"
+#include "processor.h"
 #include <iostream>
 #include <cmath>
 
@@ -36,6 +37,8 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
             handle_write_back(set, replace_way, stalls);
             bus->free_time = 100;
             stalls += 100;
+            data_traffic += block_size;
+            bus->total_traffic += block_size;
             cache_lines[set][replace_way] = {'E', tag , global_cycle + stalls};
             // idle cycles--;
             return false;
@@ -50,6 +53,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
         // Not in any other cache - get from memory in Exclusive state
         // stalls += 100; // Memory read takes 100 cycles 
         data_traffic += block_size;
+        bus->total_traffic += block_size;
         bus->free_time = 100;
         stalls += 100;
         cache_lines[set][replace_way] ={'E',get_tag(address),global_cycle + stalls};
@@ -58,15 +62,17 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
         //first cache to chache copy
         int words_in_block = block_size / 4;
         bus->free_time = 2 * words_in_block;
+        bus->total_traffic += block_size;
+        data_traffic += block_size;
         stalls += (2 * words_in_block);
             cache_lines[set][replace_way] = {'S', get_tag(address), global_cycle + stalls};
-        data_traffic += block_size;
         // write back in case for M
         if(state_in_other_caches == 'M'){
             // get that core id and cahnge the state to S
             stalls+=100;
             bus->free_time += 100;
             writebacks++;
+            bus->total_traffic += block_size;
         }
         // stalls += 2 * words_in_block; // 2 cycles per word for cache-to-cache transfer
     }
@@ -84,13 +90,16 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
         cache_lines[set][way].last_used_cycle = global_cycle;
         
         if (cache_lines[set][way].state == 'M') {
+            data_traffic += block_size;
             return true; // direct write already this address
         } else if (cache_lines[set][way].state == 'E') { 
+            data_traffic += block_size;
             cache_lines[set][way].state = 'M';
             return true; // direct write already this address
         } else if (cache_lines[set][way].state == 'S') {
             if(bus->is_busy()) return false;
             // but count it as hit
+            data_traffic += block_size;
             bus->invalidate(address, core_id, stalls, global_cycle);
             cache_lines[set][way].state = 'M';
             return true; // direct write already this address
@@ -109,6 +118,8 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
             handle_write_back(set, replace_way, stalls);
             stalls += 100;
             bus->free_time = 100; 
+            data_traffic += block_size;
+            bus->total_traffic += block_size;
             cache_lines[set][replace_way] = {'I',last_address,0};
             return false; 
         }
@@ -121,12 +132,15 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
         writebacks++;
         stalls += 100; // Memory write takes 100 cycles
         bus->free_time+=100;
+        bus->total_traffic += block_size;
+        
     }
     // if(state_in_other_caches == 'X') {
     //     return false; // Bus is busy, retry in next cycle
     // }
     // no other copies read from memory
     data_traffic += block_size;
+    bus->total_traffic += block_size;
     stalls += 100; // Memory read takes 100 cycles
     bus->free_time = 100;
     cache_lines[set][replace_way]={'E',get_tag(address),global_cycle+stalls};
@@ -150,6 +164,8 @@ char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& sta
             // uint32_t last_address = get_address_from_set_and_tag(set,way);
             // bus->free_time = 100;
             // bus->message = {requesting_core, last_address, 'E'};
+            data_traffic += block_size;
+            
             cache_lines[set][way].state = 'I';
             return 'M';
         }
@@ -160,6 +176,7 @@ char Cache::snoop(uint32_t address, bool is_write, int requesting_core, int& sta
             // uint32_t last_address = get_address_from_set_and_tag(set,way);
             // bus->free_time = 100;
             // bus->message = {requesting_core, last_address, 'E'};
+            data_traffic += block_size;
             cache_lines[set][way].state = 'S'; 
             return 'M';
         } else if (current_state == 'E') {

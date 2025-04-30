@@ -14,10 +14,9 @@ struct Message {  // message for read from ram and write back to ram or message 
  
 
 class Bus {
-private:
-    std::vector<Processor*> processors;
 
 public:
+    std::vector<Processor*> processors;
     int total_transactions;
     int total_traffic;
     int free_time;

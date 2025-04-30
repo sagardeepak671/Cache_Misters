@@ -30,7 +30,6 @@ ProcessorStatus Processor::execute_cycle(Bus* bus, int global_cycle) {
         else {
             is_stalled = false;
         }
-        total_cycles++;
         return WaitingForBus;
     }
     if (has_instruction) {

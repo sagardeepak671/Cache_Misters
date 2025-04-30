@@ -17,7 +17,6 @@ enum ProcessorStatus{
 class Processor {
 private:
     int proc_id;
-    Cache cache;
     ifstream trace_file;
     
     char current_op;
@@ -30,6 +29,7 @@ private:
     bool process_instruction(Bus* bus, int global_cycle);
     
 public:
+    Cache cache;
     bool is_stalled;
     int stall_cycles;
     int total_cycles;

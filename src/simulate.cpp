@@ -52,14 +52,13 @@ void Simulator::run() {
         //     cout<<"idle cycles: "<<proc->idle_cycles<<endl;
         //     cout<<"total cycles: "<<proc->total_cycles<<endl;
         // }
-        cout<<"-------------------"<<endl;
+        // cout<<"-------------------"<<endl;
         if(worked==false){
             // do free the bus instantly adding up it to global cycles
             global_cycle+=bus.free_time;
             for(Processor* proc:processors){
                 if(proc->get_has_instruction()){
                     proc->idle_cycles += bus.free_time;
-                    proc->total_cycles += bus.free_time;
                     proc->stall_cycles=0;
                     proc->is_stalled=false;
                 }
@@ -91,7 +90,7 @@ void Simulator::print_results(ostream& out) {
             << "Total Instructions: " << proc->total_instructions() << "\n"
             << "Total Reads: " << proc->reads << "\n"
             << "Total Writes: " << proc->writes << "\n"
-            << "Total Execution Cycles: " << proc->total_cycles - proc->idle_cycles << "\n"
+            << "Total Execution Cycles: " << proc->total_cycles << "\n"
             << "Idle Cycles: " << proc->idle_cycles << "\n"
             << "Cache Misses: " << cache->misses << "\n"
             << "Cache Miss Rate: " << fixed << setprecision(2) << miss_rate << "%\n"
