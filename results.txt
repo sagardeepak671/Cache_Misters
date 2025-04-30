@@ -1,7 +1,7 @@
 Simulation Parameters:
-Trace Prefix: assignment3_traces/app1
-Set Index Bits: 6, Associativity: 2, Block Bits: 5
-Block Size (Bytes): 32, Number of Sets: 64, Cache Size (KB per core): 4
+Trace Prefix: ./assignment3_traces/app1
+Set Index Bits: 5, Associativity: 2, Block Bits: 5
+Block Size (Bytes): 32, Number of Sets: 32, Cache Size (KB per core): 2
 MESI Protocol: Enabled, Write Policy: Write-back, Write-allocate
 Replacement Policy: LRU, Bus: Central snooping bus
 
@@ -9,55 +9,55 @@ Core 0 Statistics:
 Total Instructions: 2497349
 Total Reads: 1489888
 Total Writes: 1007461
-Total Execution Cycles: 1757637
-Idle Cycles: 6200048
-Cache Misses: 35751
-Cache Miss Rate: 1.43%
-Cache Evictions: 35547
-Writebacks: 7161
-Bus Invalidations: 18063
-Data Traffic (Bytes): 1182752
+Total Execution Cycles: 6792248
+Idle Cycles: 26007457
+Cache Misses: 108756
+Cache Miss Rate: 4.35%
+Cache Evictions: 108657
+Writebacks: 26270
+Bus Invalidations: 36092
+Data Traffic (Bytes): 3537248
 
 Core 1 Statistics:
 Total Instructions: 2490468
 Total Reads: 1485857
 Total Writes: 1004611
-Total Execution Cycles: 1635645
-Idle Cycles: 6553749
-Cache Misses: 35201
-Cache Miss Rate: 1.41%
-Cache Evictions: 35029
-Writebacks: 6773
-Bus Invalidations: 18329
-Data Traffic (Bytes): 1157376
+Total Execution Cycles: 6671583
+Idle Cycles: 25773425
+Cache Misses: 107948
+Cache Miss Rate: 4.33%
+Cache Evictions: 107856
+Writebacks: 25800
+Bus Invalidations: 36423
+Data Traffic (Bytes): 3501984
 
 Core 2 Statistics:
 Total Instructions: 2509057
 Total Reads: 1492629
 Total Writes: 1016428
-Total Execution Cycles: 357684
-Idle Cycles: 11434246
-Cache Misses: 40688
-Cache Miss Rate: 1.62%
-Cache Evictions: 40488
-Writebacks: 10481
-Bus Invalidations: 15341
-Data Traffic (Bytes): 1402016
+Total Execution Cycles: 6843425
+Idle Cycles: 26594798
+Cache Misses: 114045
+Cache Miss Rate: 4.55%
+Cache Evictions: 113920
+Writebacks: 29696
+Bus Invalidations: 33246
+Data Traffic (Bytes): 3773312
 
 Core 3 Statistics:
 Total Instructions: 2503127
 Total Reads: 1493736
 Total Writes: 1009391
-Total Execution Cycles: -1299955
-Idle Cycles: 12666825
-Cache Misses: 35879
-Cache Miss Rate: 1.43%
-Cache Evictions: 35703
-Writebacks: 6993
-Bus Invalidations: 18263
-Data Traffic (Bytes): 1180096
+Total Execution Cycles: 6873415
+Idle Cycles: 25947782
+Cache Misses: 109258
+Cache Miss Rate: 4.36%
+Cache Evictions: 109162
+Writebacks: 26234
+Bus Invalidations: 36205
+Data Traffic (Bytes): 3547424
 
 Overall Bus Summary:
-Total Bus Transactions: 145982
+Total Bus Transactions: 388225
 Total Bus Traffic (Bytes): 0
-Maximum Execution Time: 11791930 cycles
+Maximum Execution Time: 33438223 cycles
