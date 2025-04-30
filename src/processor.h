@@ -8,6 +8,12 @@ using namespace std;
 
 class Bus;
 
+enum ProcessorStatus{
+    WaitingForBus,
+    InstructionProcessed,
+    NoInstructionsLeft
+};
+
 class Processor {
 private:
     int proc_id;
@@ -35,7 +41,7 @@ public:
     Processor(int id, const string& trace_prefix, int s, int E, int b);
  
     
-    char execute_cycle(Bus* bus, int global_cycle);
+    ProcessorStatus execute_cycle(Bus* bus, int global_cycle);
     char snoop_request(uint32_t address, bool is_write, int requesting_core);
     void invalidate_line(uint32_t address);
     

@@ -9,7 +9,7 @@ Core 0 Statistics:
 Total Instructions: 2
 Total Reads: 2
 Total Writes: 0
-Total Execution Cycles: 2
+Total Execution Cycles: 5
 Idle Cycles: 215
 Cache Misses: 2
 Cache Miss Rate: 100.00%
@@ -22,7 +22,7 @@ Core 1 Statistics:
 Total Instructions: 1
 Total Reads: 1
 Total Writes: 0
-Total Execution Cycles: 1
+Total Execution Cycles: 3
 Idle Cycles: 200
 Cache Misses: 1
 Cache Miss Rate: 100.00%

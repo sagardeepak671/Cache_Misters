@@ -29,16 +29,13 @@ void Simulator::run() {
         // Execute one cycle for each processor
         cout<<"Cycle: "<<global_cycle<<endl;
         for (Processor* proc : processors) {
-            char res = proc->execute_cycle(&bus,global_cycle);
-            if(res =='@' || res=='$'){
+            ProcessorStatus res = proc->execute_cycle(&bus,global_cycle);
+            if(res == WaitingForBus || res == InstructionProcessed){
                 running = true;
             }
-            if(res=='@'){
+            if(res==InstructionProcessed){
                 worked=true;
             }
-            // if (proc->execute_cycle(&bus, global_cycle) == '@' ) {
-            //     running = true;
-            // }
         }
         if(worked==false){
             // do free the bus instantly adding up it to global cycles
@@ -78,7 +75,7 @@ void Simulator::print_results(ostream& out) {
             << "Total Instructions: " << proc->total_instructions() << "\n"
             << "Total Reads: " << proc->reads << "\n"
             << "Total Writes: " << proc->writes << "\n"
-            << "Total Execution Cycles: " << proc->total_instructions() << "\n"
+            << "Total Execution Cycles: " << proc->total_cycles - proc->idle_cycles << "\n"
             << "Idle Cycles: " << proc->idle_cycles << "\n"
             << "Cache Misses: " << cache->misses << "\n"
             << "Cache Miss Rate: " << fixed << setprecision(2) << miss_rate << "%\n"

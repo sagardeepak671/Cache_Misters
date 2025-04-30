@@ -109,7 +109,7 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
             handle_write_back(set, replace_way, stalls);
             stalls += 100;
             bus->free_time = 100; 
-            bus->message = {core_id, last_address, 'I'};
+            cache_lines[set][replace_way] = {'I',last_address,0};
             return false; 
         }
     }
@@ -129,7 +129,7 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
     data_traffic += block_size;
     stalls += 100; // Memory read takes 100 cycles
     bus->free_time = 100;
-    bus->message = {core_id,address,'E'};
+    cache_lines[set][replace_way]={'E',get_tag(address),global_cycle+stalls};
     //Read with intent to modify ... if other processors contain this address invalidate them
     bus->invalidate(address,core_id,stalls,global_cycle);
     return false;

@@ -5,6 +5,7 @@
 #include <algorithm>
 using namespace std;
 
+
 Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
     : proc_id(id), cache(s, E, b), has_instruction(false),is_stalled(false), stall_cycles(0),
       total_cycles(0), idle_cycles(0), reads(0), writes(0),has_new_instruction(false) {
@@ -20,27 +21,27 @@ Processor::Processor(int id, const string& trace_prefix, int s, int E, int b)
 }
  
 
-char Processor::execute_cycle(Bus* bus, int global_cycle) { 
+ProcessorStatus Processor::execute_cycle(Bus* bus, int global_cycle) { 
 
     if (is_stalled) {
         cout<<"stall cycle "<<stall_cycles<<endl;
         stall_cycles--;
-        if(stall_cycles>0)idle_cycles++;
+        if(stall_cycles>=0)idle_cycles++;
         else {
             is_stalled = false;
         }
         total_cycles++;
-        return '$';
+        return WaitingForBus;
     }
     if (has_instruction) {
         total_cycles++; 
         if(process_instruction(bus, global_cycle)){
-            return '@';  // instruction processed
+            return InstructionProcessed;  
         }else{
-            return '$';  // instruction not processed need bus to get free
+            return WaitingForBus;  
         }
     }
-    return '!'; // No more instructions
+    return NoInstructionsLeft;
 }
 
 char Processor::snoop_request(uint32_t address, bool is_write, int requesting_core) {
