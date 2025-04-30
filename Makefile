@@ -29,7 +29,7 @@ $(OBJ_DIR):
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
-app ?= app1
+app ?= test
 
 run: $(TARGET)
 	./L1simulate -t $(app) -s 5 -E 2 -b 5 -o results.txt
