@@ -58,8 +58,8 @@ char Processor::snoop_request(uint32_t address, bool is_write, int requesting_co
 }
 
 void Processor::invalidate_line(uint32_t address) {
+    // cout<<"clearline "<<address<<" "<<proc_id<<endl;
     cache.update_line_state(address, 'I');
-    cache.invalidations++;
 }
 
 void Processor::read_next_instruction() {
@@ -74,7 +74,7 @@ void Processor::read_next_instruction() {
     }else{ 
         has_instruction = false; 
         has_new_instruction=false;
-    }
+    } 
 }
 
 bool Processor::process_instruction(Bus* bus, int global_cycle) {

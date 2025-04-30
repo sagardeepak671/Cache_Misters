@@ -47,10 +47,10 @@ void Simulator::run() {
         //     if(res==InstructionProcessed){
         //         worked=true;
         //     }
-        //     cout<<"*********"<<endl;
-        //     cout<< "Core " << proc->get_id() << " status: " << res << endl;
-        //     cout<<"idle cycles: "<<proc->idle_cycles<<endl;
-        //     cout<<"total cycles: "<<proc->total_cycles<<endl;
+        //     // cout<<"*********"<<endl;
+        //     // cout<< "Core " << proc->get_id() << " status: " << res << endl;
+        //     // cout<<"idle cycles: "<<proc->idle_cycles<<endl;
+        //     // cout<<"total cycles: "<<proc->total_cycles<<endl;
         // }
         // cout<<"-------------------"<<endl;
         if(worked==false){

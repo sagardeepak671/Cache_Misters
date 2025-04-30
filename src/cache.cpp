@@ -32,6 +32,7 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     int replace_way = find_line_to_replace(set);
     if (replace_way != -1 && cache_lines[set][replace_way].state != 'I') {
         evictions++;
+        cout<<"evicting line "<<cache_lines[set][replace_way].tag<<"add"<<address<<endl;
         if(cache_lines[set][replace_way].state == 'M') {
             uint32_t last_address = get_address_from_set_and_tag(set,cache_lines[set][replace_way].tag);
             handle_write_back(set, replace_way, stalls);
@@ -244,7 +245,7 @@ void Cache::update_line_state(uint32_t address, char new_state) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address);
     int way = find_line(set, tag);
-    if (way != -1) cache_lines[set][way].state = new_state;   
+    if (way != -1) {cache_lines[set][way].state = new_state;invalidations++; cout<<"invalidated"<<endl;}
 }
 
 void Cache::force_update_line(uint32_t address, char state, int global_cycle) {
