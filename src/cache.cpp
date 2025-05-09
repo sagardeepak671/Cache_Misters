@@ -32,7 +32,6 @@ bool Cache::access_read(uint32_t address, int& stalls, int core_id, Bus* bus, in
     int replace_way = find_line_to_replace(set);
     if (replace_way != -1 && cache_lines[set][replace_way].state != 'I') {
         evictions++;
-        cout<<"evicting line "<<cache_lines[set][replace_way].tag<<"add"<<address<<endl;
         if(cache_lines[set][replace_way].state == 'M') {
             uint32_t last_address = get_address_from_set_and_tag(set,cache_lines[set][replace_way].tag);
             handle_write_back(set, replace_way, stalls);
@@ -91,16 +90,13 @@ bool Cache::access_write(uint32_t address, int& stalls, int core_id, Bus* bus, i
         cache_lines[set][way].last_used_cycle = global_cycle;
         
         if (cache_lines[set][way].state == 'M') {
-            data_traffic += block_size;
             return true; // direct write already this address
         } else if (cache_lines[set][way].state == 'E') { 
-            data_traffic += block_size;
             cache_lines[set][way].state = 'M';
             return true; // direct write already this address
         } else if (cache_lines[set][way].state == 'S') {
             if(bus->is_busy()) return false;
             // but count it as hit
-            data_traffic += block_size;
             bus->invalidate(address, core_id, stalls, global_cycle);
             cache_lines[set][way].state = 'M';
             return true; // direct write already this address
@@ -219,7 +215,6 @@ bool Cache::handle_write_back(uint32_t set, int way, int& stalls) {
     if (cache_lines[set][way].state == 'M') {
         writebacks++;
         // stalls += 100; // Memory write takes 100 cycles as per specification
-        data_traffic += block_size;
         return true;
     }
     return false;
@@ -245,7 +240,7 @@ void Cache::update_line_state(uint32_t address, char new_state) {
     uint32_t set = get_set_index(address);
     uint32_t tag = get_tag(address);
     int way = find_line(set, tag);
-    if (way != -1) {cache_lines[set][way].state = new_state;invalidations++; cout<<"invalidated"<<endl;}
+    if (way != -1) {cache_lines[set][way].state = new_state;invalidations++;}
 }
 
 void Cache::force_update_line(uint32_t address, char state, int global_cycle) {

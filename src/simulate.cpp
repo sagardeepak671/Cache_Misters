@@ -101,7 +101,5 @@ void Simulator::print_results(ostream& out) {
     }
     out << "Overall Bus Summary:\n"
         << "Total Bus Transactions: " << bus.total_transactions << "\n"
-        << "Total Bus Traffic (Bytes): " << bus.total_traffic << "\n"
-        << "Maximum Execution Time: " << (*max_element(processors.begin(), processors.end(), 
-            [](Processor* a, Processor* b) { return a->total_cycles < b->total_cycles; }))->total_cycles << " cycles\n";
+        << "Total Bus Traffic (Bytes): " << bus.total_traffic << "\n";
 }

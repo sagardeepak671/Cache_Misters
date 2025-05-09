@@ -21,11 +21,13 @@ uint32_t extract_bits(uint32_t address, int start, int count) {
 void print_simulation_parameters(ostream& out, const string& trace_prefix, int set_bits, int associativity, int block_bits, double cache_size_kb) {
     out << "Simulation Parameters:\n"
         << "Trace Prefix: " << trace_prefix << "\n"
-        << "Set Index Bits: " << set_bits << ", Associativity: " << associativity 
-        << ", Block Bits: " << block_bits << "\n"
-        << "Block Size (Bytes): " << (1 << block_bits) 
-        << ", Number of Sets: " << (1 << set_bits) 
-        << ", Cache Size (KB per core): " << cache_size_kb << "\n"
-        << "MESI Protocol: Enabled, Write Policy: Write-back, Write-allocate\n"
-        << "Replacement Policy: LRU, Bus: Central snooping bus\n\n";
+        << "Set Index Bits: " << set_bits << "\n"<<"Associativity: " << associativity << "\n"
+        << "Block Bits: " << block_bits << "\n"
+        << "Block Size (Bytes): " << (1 << block_bits) << "\n"
+        << "Number of Sets: " << (1 << set_bits) << "\n"
+        << "Cache Size (KB per core): " << cache_size_kb << "\n"
+        << "MESI Protocol: Enabled"<<"\n"
+        << "Write Policy: Write-back, Write-allocate\n"
+        << "Replacement Policy: LRU"<<"\n"
+        << "Bus: Central snooping bus\n\n";
 }
